@@ -1,0 +1,40 @@
+openapi: '3.0.2'
+info:
+  title: Weather Service
+  version: '1.0'
+paths:
+  /weather:
+    get:
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            $ref: '#/components/schemas/Coordinate'
+        - name: lon
+          in: query
+          schema:
+            $ref: '#/components/schemas/Coordinate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  weather_condition:
+                    type: string
+                  temperature_summary:
+                    $ref: '#/components/schemas/Temperature'
+                  
+
+
+
+components:
+  schemas:
+    Coordinate:
+      type: number
+      example: 10.99
+    Temperature:
+      type: string
+      enum: ["MODERATE", "COLD", "HOT"]
