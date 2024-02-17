@@ -12,12 +12,17 @@ import (
 	"os"
 
 	"github.com/cdecoux/weather-service/api"
+	"github.com/cdecoux/weather-service/internal/weather"
 	"github.com/go-chi/chi/v5"
 	middleware "github.com/oapi-codegen/nethttp-middleware"
 )
 
 const (
 	WEATHER_SERVICE_PORT = "8080"
+)
+
+var (
+	OPEN_WEATHER_API_KEY = os.Getenv("OPEN_WEATHER_API_KEY")
 )
 
 func main() {
@@ -29,8 +34,15 @@ func main() {
 	}
 	swagger.Servers = nil
 
+	// Setup weather utility
+	weatherUtil := weather.NewOpenWeatherUtil(OPEN_WEATHER_API_KEY)
+
 	// Create an instance of our handler which satisfies the generated interface
-	weatherService := api.NewWeatherService()
+	weatherService := api.NewWeatherService(api.WeatherServiceConfig{
+		WeatherUtil: weatherUtil,
+		HotTemp:     90,
+		ColdTemp:    60,
+	})
 	weatherServiceHandler := api.NewStrictHandler(weatherService, nil)
 
 	// Setting up basic Chi router with validation middleware

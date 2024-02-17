@@ -230,8 +230,8 @@ type GetWeatherResponseObject interface {
 }
 
 type GetWeather200JSONResponse struct {
-	TemperatureSummary *Temperature `json:"temperature_summary,omitempty"`
-	WeatherCondition   *string      `json:"weather_condition,omitempty"`
+	TemperatureSummary Temperature `json:"temperature_summary"`
+	WeatherCondition   string      `json:"weather_condition"`
 }
 
 func (response GetWeather200JSONResponse) VisitGetWeatherResponse(w http.ResponseWriter) error {
@@ -306,12 +306,13 @@ func (sh *strictHandler) GetWeather(w http.ResponseWriter, r *http.Request, para
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/5xR32sUMRD+V+TTx3C7rU/Nm7RFReVAD3wopaS5aS/lMomT2eqx5H+X7C69QxDBp5ld",
-	"8v2Y7xvhU8yJibXAjih+R9FN62VKsg3slNoX/XIx7wn2rF9dXBjoIRMseIj3JKgGG4qZxOkg83seIuwN",
-	"vqyvrr++21zD4HL9+QoGH9Yb3L4QFJXAj6i1GgR+SA2rQZsSvpPTHcmrbyTPwRMMnklKSAyLs1XfVFMm",
-	"djnA4u2qX53DIDvdTf67nzO87Y+kbaTJYUj8cQuL96SLwgQTF0lJCuzNiNA0fgwkBxiwi83O3inMklBj",
-	"eyP0AIvX3THCbsmvOwmvVvMXvsT/x3drIFRy4kLTped934ZPrMTToS7nffDTqd1TaYGNJ0JZWhAaZrQe",
-	"i7srQ4xODv9yc9p1NViCvvOJt0HDLPdnvy+Np/sn8jo3vqXiJeQZg/Wn9rfW+jsAAP//CnAa9ZYCAAA=",
+	"H4sIAAAAAAAC/5xSTWsbMRD9K+W1R+HdpKfoVpLQlrYYWkMPIQRFO4kVrJEymnVrjP570a6pTT8o9DSz",
+	"i97HvJk9fIo5MbEW2D2KX1N0U3uZkgyBnVL7ou8u5g3BnvWLiwsD3WWCBY/xngTVYEUxkzgdZX7PY4S9",
+	"wafl1fXnN6trGFwuP17B4N1yhdufBEUl8CNqrQaBH1LDatCmhK/kdE3y4gvJNniCwZakhMSwOFv0TTVl",
+	"YpcDLF4v+sU5DLLT9eS/+zbDW/9I2kqaHIbE7wdYvCU9KEwwcZGUpMDe7BGaxvNIsoMBu9jsbJzCHBJq",
+	"bK+EHmDxsjtG2B3y607Cq9X8hS/x//HdGgiVnLjQNOl537fiEyvxNKjLeRP8NGr3VFpg+xOhLC0IDTNa",
+	"j4u7K2OMTnb/cnO662pwCPrOJx6Chlnu1/02z89jEBraWfwOMX80cjyUdP9EXudDGah4CXmWwvJD+1tr",
+	"/REAAP//MAaGus0CAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -21,6 +21,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - weather_condition
+                  - temperature_summary
                 properties:
                   weather_condition:
                     type: string
