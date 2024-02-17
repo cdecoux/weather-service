@@ -1,4 +1,4 @@
-//go:generate go run github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen --config=weather-service-api.gen.yml weather-service-api.yml
+//go:generate go run github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@v2.1.0 --config=weather-service-api.gen.yml weather-service-api.yml
 package api
 
 import (
@@ -31,7 +31,12 @@ func NewWeatherService(config WeatherServiceConfig) *weatherService {
 func (w *weatherService) GetWeather(ctx context.Context, request GetWeatherRequestObject) (GetWeatherResponseObject, error) {
 	// TODO: Validate request
 	// Get Weather Details
-	weatherDetails := w.config.WeatherUtil.GetWeatherDetailsFromCoordinates(*request.Params.Lat, *request.Params.Lon)
+	weatherDetails, err := w.config.WeatherUtil.GetWeatherDetailsFromCoordinates(*request.Params.Lat, *request.Params.Lon)
+	if err != nil {
+		return GetWeather400JSONResponse{
+			Error: err.Error(),
+		}, nil
+	}
 	// Summary temperature
 	temperatureSummary := MODERATE
 	if weatherDetails.Temperature <= w.config.ColdTemp {

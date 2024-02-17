@@ -2,7 +2,9 @@ package weather
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -13,7 +15,7 @@ type WeatherDetails struct {
 }
 
 type WeatherUtil interface {
-	GetWeatherDetailsFromCoordinates(lat float32, lon float32) WeatherDetails
+	GetWeatherDetailsFromCoordinates(lat float32, lon float32) (WeatherDetails, error)
 }
 
 type OpenWeatherUtil struct {
@@ -37,12 +39,34 @@ type openWeatherResponse struct {
 	}
 }
 
-// TODO: This should return an error for upstream's discretion
-func (owu *OpenWeatherUtil) GetWeatherDetailsFromCoordinates(lat float32, lon float32) WeatherDetails {
+func parseOpenWeatherResponse(response *http.Response) WeatherDetails {
+	// Read the response body
+	var openWeatherResponse openWeatherResponse
+	if err := json.NewDecoder(response.Body).Decode(&openWeatherResponse); err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return WeatherDetails{}
+	}
+
+	// Extract fields (weather.main, main.temp)
+	details := WeatherDetails{
+		Temperature: int(openWeatherResponse.Main.Temp),
+	}
+
+	if len(openWeatherResponse.Weather) == 0 {
+		fmt.Println("No weather data for provided inputs")
+		return details
+	} else {
+		details.Condition = openWeatherResponse.Weather[0].Main
+	}
+
+	return details
+}
+
+func (owu *OpenWeatherUtil) GetWeatherDetailsFromCoordinates(lat float32, lon float32) (WeatherDetails, error) {
 	// Setup call for OpenWeather service
 	req, err := url.Parse(openWeatherBaseURL)
 	if err != nil {
-		return WeatherDetails{}
+		return WeatherDetails{}, err
 	}
 	// Query params
 	params := url.Values{}
@@ -56,32 +80,21 @@ func (owu *OpenWeatherUtil) GetWeatherDetailsFromCoordinates(lat float32, lon fl
 	response, err := http.Get(req.String())
 	if err != nil {
 		fmt.Println("Error making GET request:", err)
-		return WeatherDetails{}
+		return WeatherDetails{}, err
 	}
 	defer response.Body.Close()
 
 	// Check the response status code
 	if response.StatusCode != http.StatusOK {
-		fmt.Println("Error: Unexpected status code", response.StatusCode)
-		return WeatherDetails{}
+		var serverErr error
+		if b, err := io.ReadAll(response.Body); err != nil {
+			serverErr = errors.New("unknown error from OpenWeather backend")
+		} else {
+			serverErr = fmt.Errorf("error from OpenWeather backend: %v", string(b))
+		}
+		fmt.Println("Unexpected response from server", serverErr)
+		return WeatherDetails{}, serverErr
 	}
 
-	// Read the response body
-	var openWeatherResponse openWeatherResponse
-	err = json.NewDecoder(response.Body).Decode(&openWeatherResponse)
-	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
-		return WeatherDetails{}
-	}
-
-	if len(openWeatherResponse.Weather) == 0 {
-		fmt.Println("No weather data for provided inputs")
-		return WeatherDetails{}
-	}
-
-	// Extract fields (weather.main, main.temp)
-	return WeatherDetails{
-		Condition:   openWeatherResponse.Weather[0].Main,
-		Temperature: int(openWeatherResponse.Main.Temp),
-	}
+	return parseOpenWeatherResponse(response), nil
 }

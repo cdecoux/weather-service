@@ -31,6 +31,11 @@ const (
 // Coordinate defines model for Coordinate.
 type Coordinate = float32
 
+// ErrorMessage defines model for ErrorMessage.
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
 // Temperature defines model for Temperature.
 type Temperature string
 
@@ -241,6 +246,15 @@ func (response GetWeather200JSONResponse) VisitGetWeatherResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetWeather400JSONResponse ErrorMessage
+
+func (response GetWeather400JSONResponse) VisitGetWeatherResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
@@ -306,13 +320,14 @@ func (sh *strictHandler) GetWeather(w http.ResponseWriter, r *http.Request, para
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/5xSTWsbMRD9K+W1R+HdpKfoVpLQlrYYWkMPIQRFO4kVrJEymnVrjP570a6pTT8o9DSz",
-	"i97HvJk9fIo5MbEW2D2KX1N0U3uZkgyBnVL7ou8u5g3BnvWLiwsD3WWCBY/xngTVYEUxkzgdZX7PY4S9",
-	"wafl1fXnN6trGFwuP17B4N1yhdufBEUl8CNqrQaBH1LDatCmhK/kdE3y4gvJNniCwZakhMSwOFv0TTVl",
-	"YpcDLF4v+sU5DLLT9eS/+zbDW/9I2kqaHIbE7wdYvCU9KEwwcZGUpMDe7BGaxvNIsoMBu9jsbJzCHBJq",
-	"bK+EHmDxsjtG2B3y607Cq9X8hS/x//HdGgiVnLjQNOl537fiEyvxNKjLeRP8NGr3VFpg+xOhLC0IDTNa",
-	"j4u7K2OMTnb/cnO662pwCPrOJx6Chlnu1/02z89jEBraWfwOMX80cjyUdP9EXudDGah4CXmWwvJD+1tr",
-	"/REAAP//MAaGus0CAAA=",
+	"H4sIAAAAAAAC/5xTXU/bMBT9K+hsj1YT2F7IG4NomzZUDTrtASFkkktrVH9w7bBVlf/7dJ0IimBM25Nv",
+	"5Z6ve5wtOm+Dd+RSRLNF7FZkdRmPvefeOJ1IftEvbcOa0OzXs8NDhbQJhAZusNfEyAots+dTilEvCyCw",
+	"D8TJUCEjuZVhwsXExi2RswLT3WCYejQX098uH+j99S11SegXZAOxTgOPdtxgBXA6P2nPjhYtFI7nX0+g",
+	"8Gm+2CF40MkKxt34YsEkCYIfpNOKeO+c+N50BIV74mi8Q4P9WS2qPpDTwaDBu1k9O4BC0GlVElU/R7jM",
+	"S0py+OLQePe5R4OPlCaFAmNtKRFHNBdbGNG4G4g3UHDaip21TlBTAcL2lukGDd5Ujw1VUz3VTjc5qz/w",
+	"efd/fJfSSQzexbG7g7qWo/MukStBdQhr05Wo1W2UhW13hJ42nx6Lu4qDtZo3f3Oz23VWmBZ91XnXm2RG",
+	"udff0XOIetHI85cmTD3Fjk0YpTD/Iibe/+MSXsv35FN5QfHD0cneWfvte3u+kOuc8+8AAAD///4PyK6n",
+	"AwAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

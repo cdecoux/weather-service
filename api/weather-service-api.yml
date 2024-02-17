@@ -29,12 +29,22 @@ paths:
                     type: string
                   temperature_summary:
                     $ref: '#/components/schemas/Temperature'
+        '400':
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
                   
-
-
 
 components:
   schemas:
+    ErrorMessage:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
     Coordinate:
       type: number
       example: 10.99
