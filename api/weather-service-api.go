@@ -29,6 +29,7 @@ func NewWeatherService(config WeatherServiceConfig) *weatherService {
 
 // GetWeather implements StrictServerInterface.
 func (w *weatherService) GetWeather(ctx context.Context, request GetWeatherRequestObject) (GetWeatherResponseObject, error) {
+	// TODO: Validate request
 	// Get Weather Details
 	weatherDetails := w.config.WeatherUtil.GetWeatherDetailsFromCoordinates(*request.Params.Lat, *request.Params.Lon)
 	// Summary temperature
